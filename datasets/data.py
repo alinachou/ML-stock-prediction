@@ -33,13 +33,14 @@ TICKERS = {
 }
 
 
+
 def get_dates():
     start_date = util.generate_calendar("Select Start Date")
     end_date = util.generate_calendar("Select End Date")
     return start_date, end_date
 
 
-if __name__ == '__main__':
+def download_data():
 
     start, end = get_dates()
     stocks = util.select_stocks()
@@ -53,5 +54,6 @@ if __name__ == '__main__':
         pd.DataFrame.to_csv(data, TICKERS[stock] + "_features_train.txt", columns=features, index=False)
         pd.DataFrame.to_csv(data, TICKERS[stock] + "_labels_train.txt", columns=labels, index=False)
 
-
+if __name__ == '__main__':
+    download_data()
 
