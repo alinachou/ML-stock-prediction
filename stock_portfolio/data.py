@@ -54,6 +54,7 @@ def download_data():
         pd.DataFrame.to_csv(data, TICKERS[stock] + "_features_train.txt", columns=features, index=False)
         pd.DataFrame.to_csv(data, TICKERS[stock] + "_labels_train.txt", columns=labels, index=False)
 
+    return pd.DataFrame(data)
 if __name__ == '__main__':
     download_data()
 
