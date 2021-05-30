@@ -42,6 +42,15 @@ def compare_correlation():
     return max_correlation[0], max_correlation[1]
 
 
+def linear_predict(stock_a, stock_b):
+    stock_a = np.asarray(stock_a).reshape(-1, 1)
+    stock_b = np.asarray(stock_b)
+    clf = LinearRegression().fit(stock_a, stock_b)
+    y_pred = clf.predict(stock_a)
+    score = clf.score(stock_a, stock_b)
+    return y_pred, score
+
+
 """
 def logistic_predict(stock_a, stock_b):
     stock_a = np.asarray(stock_a).reshape(-1, 1)
@@ -51,15 +60,6 @@ def logistic_predict(stock_a, stock_b):
     # score = clf.score(stock_a, stock_b)
     print(y_pred)
 """
-
-
-def linear_predict(stock_a, stock_b):
-    stock_a = np.asarray(stock_a).reshape(-1, 1)
-    stock_b = np.asarray(stock_b)
-    clf = LinearRegression().fit(stock_a, stock_b)
-    y_pred = clf.predict(stock_a)
-    score = clf.score(stock_a, stock_b)
-    return y_pred, score
 
 
 def main():
