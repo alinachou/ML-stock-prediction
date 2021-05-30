@@ -7,7 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
-import data
+import stock_portfolio.data as data
 
 def main():
 
