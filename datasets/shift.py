@@ -6,7 +6,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
 import stock_portfolio.data as data
 
-
 TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "FB", "TSLA", "JPM", "V", "JNJ"]
 
 
@@ -43,19 +42,30 @@ def compare_correlation():
     return max_correlation[0], max_correlation[1]
 
 
+"""
 def logistic_predict(stock_a, stock_b):
-    stock_a = np.asarray(stock_a)
-    stock_b = np.asarray(stock_a)
+    stock_a = np.asarray(stock_a).reshape(-1, 1)
+    stock_b = np.asarray(stock_b)
     clf = LogisticRegression().fit(stock_a, stock_b)
     y_pred = clf.predict(stock_a)
     # score = clf.score(stock_a, stock_b)
     print(y_pred)
+"""
+
+
+def linear_predict(stock_a, stock_b):
+    stock_a = np.asarray(stock_a).reshape(-1, 1)
+    stock_b = np.asarray(stock_b)
+    clf = LinearRegression().fit(stock_a, stock_b)
+    y_pred = clf.predict(stock_a)
+    score = clf.score(stock_a, stock_b)
+    return y_pred, score
 
 
 def main():
     stock_a, stock_b = compare_correlation()
-    y_pred = logistic_predict(stock_a, stock_b)
-    print(y_pred)
+    y_pred, score = linear_predict(stock_a, stock_b)
+    print(y_pred, score)
 
 
 if __name__ == '__main__':
