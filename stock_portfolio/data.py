@@ -1,7 +1,7 @@
 from pandas_datareader import data as pdr
 import yfinance as yf
 import pandas as pd
-import util
+import stock_portfolio.util as util
 
 
 """
