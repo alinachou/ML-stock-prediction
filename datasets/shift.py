@@ -53,17 +53,18 @@ def linear_predict(stock_a, stock_b, stock_b_name):
     clf = LinearRegression().fit(stock_a, stock_b)
     y_pred = clf.predict(stock_a)
     base = yf.download(tickers=stock_b_name, period='10y').dropna()['Open']
-    y_pred = [base[i] + base[i] * y_pred[i] for i in range(len(y_pred))]
+    #y_pred = [base[i] + base[i] * y_pred[i] for i in range(len(y_pred))]
     score = clf.score(stock_a, stock_b)
 
     return y_pred, score
 
 def plot(stock_b, y_pred, time):
-    plt.plot(time, stock_b)
+    plt.plot(time[2:], stock_b)
     # plt.plot(time, stock_a)
     plt.plot(time[2:], y_pred)
     plt.xlabel("Date")
-    plt.ylabel("Price")
+    plt.ylabel("Returns")
+    plt.legend
     plt.show()
 
 
@@ -81,7 +82,8 @@ def logistic_predict(stock_a, stock_b):
 def main():
     stock_a, stock_b, stock_a_name, stock_b_name = compare_correlation()
     y_pred, score = linear_predict(stock_a, stock_b, stock_b_name)
-    plot(yf.download(tickers=stock_b_name, period='10y').dropna()['Open'], y_pred, yf.download(tickers=stock_b_name, period='10y').index)
+    # plot(yf.download(tickers=stock_b_name, period='10y').dropna()['Open'], y_pred, yf.download(tickers=stock_b_name, period='10y').index)
+    plot(stock_b, y_pred, yf.download(tickers=stock_b_name, period='10y').index)
     print(y_pred, score)
 
 
