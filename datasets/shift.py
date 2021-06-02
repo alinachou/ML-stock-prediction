@@ -97,6 +97,9 @@ def main():
     stock_a, stock_b, stock_a_name, stock_b_name = compare_correlation()
     y_pred_linear, score_linear = linear_predict(stock_a, stock_b, stock_b_name)
     y_pred_logistic, score_logistic = logistic_predict(stock_a, stock_b)
+    # Convert to dataframe:
+    df_linear = pd.DataFrame(y_pred_linear, columns=['Linear_Reg_Returns'])
+    print(df_linear)
     # plot(yf.download(tickers=stock_b_name, period='10y').dropna()['Open'], y_pred, yf.download(tickers=stock_b_name, period='10y').index)
     plot(stock_b, y_pred_linear, yf.download(tickers=stock_b_name, period='10y').index)
     print("Linear Regression: ", y_pred_linear, score_linear)
