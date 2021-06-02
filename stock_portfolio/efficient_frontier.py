@@ -10,14 +10,16 @@ import yfinance as yf
 
 yf.pdr_override()
 import pandas as pd
-stocks = "AAPL MSFT AMZN GOOGL FB JPM JNJ"
+stocks = "AAPL MSFT AMZN GOOGL FB TSLA BRK-A JPM V JNJ"
 
 
 def plot_ef(ef):
     fig, ax = plt.subplots()
     plotting.plot_efficient_frontier(ef, ax=ax)
-    ef.add_constraint(lambda w: w[0]+w[1]+w[2]+w[3]+w[4]+w[5]+w[6] == 1)
+    ef.add_constraint(lambda w: w[0]+w[1]+w[2]+w[3]+w[4]+w[5]+w[6]+w[7]+w[8]+w[9] == 1)
     weights = ef.max_sharpe()
+    cleaned_weights = ef.clean_weights()
+    print(cleaned_weights)
     optimal, volatility, _ = ef.portfolio_performance(verbose=True)
     ax.plot(volatility, optimal, marker="*", label="optimal")
     ax.legend()
@@ -25,9 +27,9 @@ def plot_ef(ef):
     plt.show()
 
 def plot_covariance(S):
-    co_v = plotting.plot_covariance(S, show_tickers=True, show=True)
+    co_v = plotting.plot_covariance(S, show_tickers=True, show=True, plot_correlation=True)
     axes.Axes.plot(co_v)
-    plt.savefig("covariance_fig.png")
+    plt.savefig("correlation_fig.png")
     plt.show()  
 
 def random_portfolios(mu, S):
@@ -55,7 +57,7 @@ def random_portfolios(mu, S):
     plt.savefig("ef_scatter.png", dpi=200)
     plt.show()
 
-df = pdr.get_data_yahoo(tickers=stocks, start="2017-01-01", end="2017-04-30")['Adj Close']
+df = pdr.get_data_yahoo(tickers=stocks, start="2014-01-01", end="2021-05-29")['Adj Close']
 returns = df.pct_change().dropna()
 mu = expected_returns.mean_historical_return(df)
 S = risk_models.sample_cov(df)
@@ -63,5 +65,3 @@ ef = EfficientFrontier(mu, S)
 plot_ef(ef)
 plot_covariance(S)
 random_portfolios(mu,S)
-cleaned_weights = ef.clean_weights()
-ef.save_weights_to_file("weights.txt")
