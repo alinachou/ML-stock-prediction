@@ -7,11 +7,8 @@ from sklearn.linear_model import LogisticRegression
 import stock_portfolio.data as data
 import matplotlib.pyplot as plt
 
-TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "FB", "TSLA", "JPM", "V", "JNJ", "BRK-B", "NVDA", "UNH", "JD", "PG", "DIS"]
 
-# table = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-# TICKERS = table[0]['Symbol'].tolist()[:100]
-print(TICKERS)
+TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "FB", "TSLA", "BRK-A", "JPM", "V", "JNJ"]
 
 
 def find_correlation(stock_a, stock_b):
@@ -38,11 +35,11 @@ def compare_correlation():
         print(TICKERS[i])
         if '.' in TICKERS[i]:
             TICKERS[i] = TICKERS[i].replace('.', '-')
-        stock_a = yf.download(tickers=TICKERS[i], period='10y')
+        stock_a = yf.download(tickers=TICKERS[i], start="2014-01-01", end="2021-05-29")
         for j in range(i, len(TICKERS)):
             if '.' in TICKERS[j]:
                 TICKERS[j] = TICKERS[j].replace('.', '-')
-            stock_b = yf.download(tickers=TICKERS[j], period='10y')
+            stock_b = yf.download(tickers=TICKERS[j], start="2014-01-01", end="2021-05-29")
             correlation, X, Y = find_correlation(stock_a, stock_b)
             correlation_lst.append((X, Y, TICKERS[i], TICKERS[j], correlation))
 
@@ -61,11 +58,13 @@ def linear_predict(stock_a, stock_b, stock_b_name):
     stock_b = np.asarray(stock_b)
     clf = LinearRegression().fit(stock_a, stock_b)
     y_pred = clf.predict(stock_a)
-    base = yf.download(tickers=stock_b_name, period='10y').dropna()['Open']
-    #y_pred = [base[i] + base[i] * y_pred[i] for i in range(len(y_pred))]
+    # Convert to dataframe:
+    df_linear = pd.DataFrame(y_pred, columns=['Linear_Reg_Returns'])
+    base = yf.download(tickers=stock_b_name, start="2014-01-01", end="2021-05-29").dropna()['Open']
+    # y_pred = [base[i] + base[i] * y_pred[i] for i in range(len(y_pred))]
     score = clf.score(stock_a, stock_b)
 
-    return y_pred, score
+    return y_pred, df_linear, score
 
 
 def logistic_predict(stock_a, stock_b):
@@ -78,9 +77,11 @@ def logistic_predict(stock_a, stock_b):
 
     clf = LogisticRegression().fit(stock_a, stock_b)
     y_pred = clf.predict(stock_a)
+    # Convert to dataframe:
+    df_logistic = pd.DataFrame(y_pred, columns=['Linear_Reg_Returns'])
     score = clf.score(stock_a, stock_b)
 
-    return y_pred, score
+    return y_pred, df_logistic, score
 
 
 def plot(stock_b, y_pred, time):
@@ -95,13 +96,10 @@ def plot(stock_b, y_pred, time):
 
 def main():
     stock_a, stock_b, stock_a_name, stock_b_name = compare_correlation()
-    y_pred_linear, score_linear = linear_predict(stock_a, stock_b, stock_b_name)
-    y_pred_logistic, score_logistic = logistic_predict(stock_a, stock_b)
-    # Convert to dataframe:
-    df_linear = pd.DataFrame(y_pred_linear, columns=['Linear_Reg_Returns'])
-    print(df_linear)
+    y_pred_linear, df_linear, score_linear = linear_predict(stock_a, stock_b, stock_b_name)
+    y_pred_logistic, df_logistic, score_logistic = logistic_predict(stock_a, stock_b)
     # plot(yf.download(tickers=stock_b_name, period='10y').dropna()['Open'], y_pred, yf.download(tickers=stock_b_name, period='10y').index)
-    plot(stock_b, y_pred_linear, yf.download(tickers=stock_b_name, period='10y').index)
+    plot(stock_b, y_pred_linear, yf.download(tickers=stock_b_name, start="2014-01-01", end="2021-05-29").index)
     print("Linear Regression: ", y_pred_linear, score_linear)
     print("Logistic Regression: ", y_pred_logistic, score_logistic)
 
