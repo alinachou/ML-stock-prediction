@@ -9,6 +9,9 @@ from pypfopt import objective_functions
 from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 from pandas_datareader import data as pdr
 import yfinance as yf
+import sys
+sys.path.insert(0, "../datasets")
+import shift
 
 yf.pdr_override()
 import pandas as pd
@@ -16,16 +19,17 @@ stocks = "AAPL MSFT AMZN GOOGL FB TSLA BRK-A JPM V JNJ"
 
 
 def plot_ef(ef, method=None):
-    fig, ax = plt.subplots()
-    plotting.plot_efficient_frontier(ef, ax=ax)
+    # fig, ax = plt.subplots()
+    # plotting.plot_efficient_frontier(ef, ax=ax)
     ef.add_constraint(lambda w: w[0]+w[1]+w[2]+w[3]+w[4]+w[5]+w[6]+w[7]+w[8]+w[9] == 1)
-    weights = ef.max_sharpe()
+    ef.add_objective(objective_functions.L2_reg, gamma=0.1)
+    weights = ef.min_volatility()
     cleaned_weights = ef.clean_weights()
     print(cleaned_weights)
     optimal, volatility, _ = ef.portfolio_performance(verbose=True)
-    ax.plot(volatility, optimal, marker="*", label="optimal")
-    ax.legend()
-    plt.savefig("ef_{}.png".format(method))
+    # ax.plot(volatility, optimal, marker="*", label="optimal")
+    # ax.legend()
+    # plt.savefig("ef_{}.png".format(method))
     plt.show()
 
 def plot_covariance(S):
@@ -40,9 +44,9 @@ def random_portfolios(mu, S):
     plotting.plot_efficient_frontier(ef, ax=ax, show_assets=False)
 
     # Find the tangency portfolio
-    ef.max_sharpe()
+    ef.min_volatility()
     ret_tangent, std_tangent, _ = ef.portfolio_performance()
-    ax.scatter(std_tangent, ret_tangent, marker="*", s=100, c="r", label="Max Sharpe")
+    ax.scatter(std_tangent, ret_tangent, marker="*", s=100, c="r", label="Minimum Volatility")
 
     # Generate random portfolios
     n_samples = 10000
@@ -53,7 +57,7 @@ def random_portfolios(mu, S):
     ax.scatter(stds, rets, marker=".", c=sharpes, cmap="viridis_r")
 
     # Output
-    ax.set_title("Efficient Frontier with random portfolios")
+    ax.set_title("Efficient Frontier with Random Portfolios")
     ax.legend()
     plt.tight_layout()
     plt.savefig("ef_scatter.png", dpi=200)
@@ -70,6 +74,9 @@ def allocate(df, ef):
 def run(method):
     if method == "NN":
         df = pd.read_pickle("../NN/expected_returns_NN.pkl")
+        print(df)
+    elif method == "TS":
+        df = shift.run()
     else:
         #2019-12-12 to now
         df = pdr.get_data_yahoo(tickers=stocks, start="2014-01-01", end="2021-05-29")['Adj Close']
@@ -77,8 +84,9 @@ def run(method):
     mu = expected_returns.mean_historical_return(df)
     S = risk_models.sample_cov(df)
     ef = EfficientFrontier(mu, S)
-    plot_ef(ef, method=method)
-# plot_covariance(S)
-# random_portfolios(mu,S)
+    random_portfolios(mu,S)
+    # plot_ef(ef, method=method)
+    # plot_covariance(S)
+
 if __name__ == '__main__':
-    run("NN")
+    run(method=None)

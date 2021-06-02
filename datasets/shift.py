@@ -1,5 +1,7 @@
 import yfinance as yf
 import pandas as pd
+import sys
+sys.path.insert(0, "../")
 from datasets.linear_reg import *
 from datasets.logistic_reg import *
 from sklearn.linear_model import LinearRegression
@@ -100,7 +102,7 @@ def plot(stock_b, y_pred, time, stock_a_name, stock_b_name):
     plt.show()
 
 
-def main():
+def run():
     # stock_a, stock_b, stock_a_name, stock_b_name = compare_correlation()
     correlation_all_stock = compare_correlation()
     df_lst = []
@@ -114,18 +116,19 @@ def main():
         y_pred_logistic, df_logistic, score_logistic = logistic_predict(stock_a, stock_b)
 
         y_pred_linear = np.asarray(y_pred_linear).reshape(-1, 1)
-        print(y_pred_linear)
-        print(y_pred_linear.shape)
+        # print(y_pred_linear)
+        # print(y_pred_linear.shape)
         df_lst.append(y_pred_linear)
 
-        plot(stock_b, y_pred_linear, yf.download(tickers=stock_b_name, start="2014-01-01", end="2021-05-29").index, stock_a_name, stock_b_name)
-        print(stock_a_name, stock_b_name, "Linear Regression: ", y_pred_linear, score_linear)
-        print("Logistic Regression: ", y_pred_logistic, score_logistic)
+        # plot(stock_b, y_pred_linear, yf.download(tickers=stock_b_name, start="2014-01-01", end="2021-05-29").index, stock_a_name, stock_b_name)
+        # print(stock_a_name, stock_b_name, "Linear Regression: ", y_pred_linear, score_linear)
+        # print("Logistic Regression: ", y_pred_logistic, score_logistic)
         
     df = pd.DataFrame(np.hstack(tuple(df_lst)),
                           columns=["AAPL", "MSFT", "AMZN", "GOOGL", "FB", "TSLA", "BRK-A", "JPM", "V", "JNJ"])
     print(df)
+    return df
 
 
 if __name__ == '__main__':
-    main()
+    run()

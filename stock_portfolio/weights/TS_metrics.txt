@@ -1,0 +1,4 @@
+OrderedDict([('AAPL', 0.07864), ('MSFT', 0.05916), ('AMZN', 0.18981), ('GOOGL', 0.19362), ('FB', 0.01413), ('TSLA', 0.0741), ('BRK-A', 0.02478), ('JPM', 0.0109), ('V', 0.24285), ('JNJ', 0.11201)])
+Expected annual return: nan%
+Annual volatility: 20655.0%
+Sharpe Ratio: nan
